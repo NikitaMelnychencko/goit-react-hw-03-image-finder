@@ -2,31 +2,29 @@ import { Component } from 'react';
 import Section from 'components/Section/Section';
 import ImageGallery from 'components/ImageGallery/ImageGallery';
 import Searchbar from 'components/Searchbar/Searchbar';
+import Modal from 'components/Modal/Modal';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 // import { nanoid } from 'nanoid';
-const BASE = 'https://pixabay.com/api/';
-const KEY = '23933594-99c5d6abfa76120a4e36d3057';
+
 class App extends Component {
   state = {
     searchName: '',
-    image: null,
-    loading: false,
+    showModal: false,
+    imageSrc: null,
+    imageAlt: null,
   };
-  // componentDidMount() {
-  //   let url =
-  //     BASE +
-  //     `?q=car&page=1&key=${KEY}&image_type=photo&orientation=horizontal&per_page=12`;
-  //   fetch(url)
-  //     .then(res => res.json())
-  //     .then(image => this.setState({ image }))
-  //     .catch()
-  //     .finally(() => this.setState({ loading: true }));
-  // }
+
   handleFormSubmit = searchName => {
     this.setState({ searchName });
   };
-
+  toggleModal = (src, alt) => {
+    this.setState(({ showModal }) => ({
+      showModal: !showModal,
+      imageSrc: src,
+      imageAlt: alt,
+    }));
+  };
   render() {
     return (
       <>
@@ -34,9 +32,18 @@ class App extends Component {
           <Searchbar onSubmit={this.handleFormSubmit} />
         </Section>
         <Section>
-          {!this.state.loading && <p>Loading...</p>}{' '}
-          {this.state.image && <ImageGallery image={this.state.image} />}
+          <ImageGallery
+            searchName={this.state.searchName}
+            onClick={this.toggleModal}
+          />
         </Section>
+        {this.state.showModal && (
+          <Modal
+            src={this.state.imageSrc}
+            alt={this.state.imageAlt}
+            onClose={this.toggleModal}
+          />
+        )}
         <ToastContainer autoClose={4000} />
       </>
     );

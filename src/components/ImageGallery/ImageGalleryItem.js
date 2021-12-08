@@ -1,6 +1,6 @@
-const ImageGalleryItem = ({ srs, alt }) => {
+const ImageGalleryItem = ({ srs, alt, onClick, largeImageURL }) => {
   return (
-    <li className="gallery-item">
+    <li className="gallery-item" onClick={() => onClick(largeImageURL, alt)}>
       <img src={srs} alt={alt} />
     </li>
   );
