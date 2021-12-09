@@ -5,7 +5,7 @@ import Searchbar from 'components/Searchbar/Searchbar';
 import Modal from 'components/Modal/Modal';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-// import { nanoid } from 'nanoid';
+import Loader from 'react-loader-spinner';
 
 class App extends Component {
   state = {
