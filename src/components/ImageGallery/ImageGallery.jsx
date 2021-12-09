@@ -5,7 +5,6 @@ import Button from 'components/Button/Button';
 import Loader from 'react-loader-spinner';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 import s from './ImageGallery.module.scss';
-import { nanoid } from 'nanoid';
 class ImageGallery extends PureComponent {
   state = {
     image: [],
@@ -21,8 +20,7 @@ class ImageGallery extends PureComponent {
       prevState.page !== this.state.page
     ) {
       if (prevProps.searchName !== this.props.searchName)
-        this.setState({ image: [] });
-      this.setState({ status: 'pending' });
+        this.setState({ image: [], status: 'pending' });
       fetchApi(this.props.searchName, this.state.page)
         .then(image => {
           if (image.hits.length === 0) {
