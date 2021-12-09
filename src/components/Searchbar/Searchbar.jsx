@@ -1,7 +1,9 @@
+import { nanoid } from 'nanoid';
 import { Component } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import s from './Searchbar.module.scss';
 
 class Searchbar extends Component {
   state = {
@@ -22,14 +24,17 @@ class Searchbar extends Component {
   };
   render() {
     return (
-      <header className="searchbar">
-        <form className="form" onSubmit={this.handleSubmit}>
-          <button type="submit" className="button">
+      <div className="searchbar">
+        <form className={s.SearchForm} onSubmit={this.handleSubmit}>
+          <button type="submit" className={s.SearchFormButton}>
             <FiSearch />
           </button>
-
+          <label htmlFor={nanoid()} className={s.SearchFormButtonLabel}>
+            Search pictures
+          </label>
           <input
-            className="input"
+            id={nanoid()}
+            className={s.SearchFormInput}
             type="text"
             autoComplete="off"
             autoFocus
@@ -38,7 +43,7 @@ class Searchbar extends Component {
             onChange={this.handleNameChange}
           />
         </form>
-      </header>
+      </div>
     );
   }
 }

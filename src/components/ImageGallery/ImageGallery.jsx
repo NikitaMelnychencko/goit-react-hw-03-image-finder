@@ -1,47 +1,41 @@
-import { PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import ImageGalleryItem from './ImageGalleryItem';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import fetchApi from 'AppServise';
+import Button from 'components/Button/Button';
 import Loader from 'react-loader-spinner';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
+import s from './ImageGallery.module.scss';
 import { nanoid } from 'nanoid';
-import Button from 'components/Button/Button';
-
 class ImageGallery extends PureComponent {
   state = {
     image: [],
     status: 'idle',
     error: null,
     page: 1,
+    myRef: React.createRef(),
   };
+
   componentDidUpdate(prevProps, prevState) {
     if (
       prevProps.searchName !== this.props.searchName ||
       prevState.page !== this.state.page
     ) {
-      const BASE = 'https://pixabay.com/api/';
-      const KEY = '23933594-99c5d6abfa76120a4e36d3057';
-      const url =
-        BASE +
-        `?q=${this.props.searchName}&page=${this.state.page}&key=${KEY}&image_type=photo&orientation=horizontal&per_page=12`;
+      if (prevProps.searchName !== this.props.searchName)
+        this.setState({ image: [] });
       this.setState({ status: 'pending' });
-      fetch(url)
-        .then(res => {
-          if (res.ok) {
-            return res.json();
-          }
-          return Promise.reject(new Error(`Oops, something went wrong.`));
-        })
+      fetchApi(this.props.searchName, this.state.page)
         .then(image => {
           if (image.hits.length === 0) {
             return Promise.reject(
               new Error(`No results were found for your search.`),
             );
           }
+          image.hits[0] = { ...image.hits[0], myRef: this.state.myRef };
           this.setState({
             image: [...this.state.image, ...image.hits],
             status: 'resolved',
           });
+          this.scrollInto(this.state.myRef);
         })
         .catch(error => this.setState({ error, status: 'rejected' }));
     }
@@ -51,11 +45,33 @@ class ImageGallery extends PureComponent {
       page: this.state.page + 1,
     });
   };
+
+  scrollInto = elem => {
+    elem.current.scrollIntoView({
+      behavior: 'smooth',
+      block: 'end',
+    });
+  };
   render() {
     const { image, status, error } = this.state;
     return (
       <>
         {status === 'idle' && <p>Input value</p>}
+        {status === 'rejected' && <strong>{error.message}</strong>}
+        {image.length > 0 && (
+          <ul className={s.Galere}>
+            {image.map(img => (
+              <ImageGalleryItem
+                key={img.id}
+                onClick={this.props.onClick}
+                srs={img.webformatURL}
+                alt={img.tags}
+                largeImageURL={img.largeImageURL}
+                myRef={img.myRef}
+              />
+            ))}
+          </ul>
+        )}
         {status === 'pending' && (
           <Loader
             type="Puff"
@@ -65,23 +81,7 @@ class ImageGallery extends PureComponent {
             timeout={3000}
           />
         )}
-        {status === 'rejected' && <strong>{error.message}</strong>}
-        {status === 'resolved' && (
-          <>
-            <ul className="gallery">
-              {image.map(img => (
-                <ImageGalleryItem
-                  key={nanoid()}
-                  onClick={this.props.onClick}
-                  srs={img.previewURL}
-                  alt={img.tags}
-                  largeImageURL={img.largeImageURL}
-                />
-              ))}
-            </ul>
-            <Button onClick={this.nextPage} />
-          </>
-        )}
+        {status === 'resolved' && <Button onClick={this.nextPage} />}
       </>
     );
   }

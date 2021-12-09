@@ -5,14 +5,12 @@ import Searchbar from 'components/Searchbar/Searchbar';
 import Modal from 'components/Modal/Modal';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Loader from 'react-loader-spinner';
 
 class App extends Component {
   state = {
     searchName: '',
     showModal: false,
-    imageSrc: null,
-    imageAlt: null,
+    option: {},
   };
 
   handleFormSubmit = searchName => {
@@ -21,26 +19,23 @@ class App extends Component {
   toggleModal = (src, alt) => {
     this.setState(({ showModal }) => ({
       showModal: !showModal,
-      imageSrc: src,
-      imageAlt: alt,
+      option: { imageSrc: src, imageAlt: alt },
     }));
   };
   render() {
+    const { option, searchName, showModal } = this.state;
     return (
       <>
-        <Section>
+        <Section color={'#3f51b5'}>
           <Searchbar onSubmit={this.handleFormSubmit} />
         </Section>
         <Section>
-          <ImageGallery
-            searchName={this.state.searchName}
-            onClick={this.toggleModal}
-          />
+          <ImageGallery searchName={searchName} onClick={this.toggleModal} />
         </Section>
-        {this.state.showModal && (
+        {showModal && (
           <Modal
-            src={this.state.imageSrc}
-            alt={this.state.imageAlt}
+            src={option.imageSrc}
+            alt={option.imageAlt}
             onClose={this.toggleModal}
           />
         )}
